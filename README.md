@@ -10,17 +10,14 @@
 ### With Docker
 
 ```bash
-docker run docker.io/adrianorenstein/duo_device_register:latest python duo_activate.py --qr_img qr.png
-chmod -R 600 ~/.ssh/duo_device
-chmod +x ~/.ssh/duo_device/duo_activate.py
-chmod +x ~/.ssh/duo_device/duo_gen_cli.py
+docker run --rm -it -w /app --volume=$(pwd):/app/:rw adrianorenstein/duo_device_register:latest zbarimg qr.png | sed 's/QR-Code:duo:\/\/\(.*\)/\1/'
 ```
 
-### Or, with venv
-
+Replace `XXXXXXXXXX-YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY` below with the output of the command above.
 ```bash
-# make a virtualenv 
+docker run --rm -it -w /app --volume=$(pwd):/app/:rw adrianorenstein/duo_device_register:latest python duo_activate.py XXXXXXXXXX-YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
 
+chmod -R 700 ~/.ssh/duo_device
 ```
 
 ## 2) Creating the `duo-ssh` command
@@ -30,6 +27,13 @@ Inside of `.zshrc` or `.bashrc`, paste:
 ```bash
 echo 'source ~/.ssh/duo_device/duo_ssh.sh' >> ~/.zshrc
 source ~/.zshrc
+```
+
+
+## 3) Ready
+
+```bash
+`duo-ssh beluga`
 ```
 
 # Contributors
