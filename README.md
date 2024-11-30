@@ -25,9 +25,24 @@ chmod -R 600 ~/.ssh/duo_device
 
 ## 2) Creating the `duo-ssh` command
 
-Inside of `.zshrc` or `.bashrc`, paste:
-
+### oathtool
+`oathtool` is required for the `duo-ssh` command to work, so:
 ```bash
+# For Debian/Ubuntu, run:
+sudo apt-get install oathtool
+
+# or for macOS with Homebrew, run:
+brew install oath-toolkit
+```
+
+### duo-ssh command
+Then we can add the `duo-ssh` command into your:
+```bash
+# .bashrc
+echo 'source ~/.ssh/duo_device/duo_ssh.sh' >> ~/.bashrc
+source ~/.bashrc
+
+# or .zshrc
 echo 'source ~/.ssh/duo_device/duo_ssh.sh' >> ~/.zshrc
 source ~/.zshrc
 ```
@@ -37,7 +52,6 @@ source ~/.zshrc
 
 ```bash
 duo-ssh beluga
-
 ```
 
 Note: fingerprints will require user input and likely re-doing the duo-ssh login. 
@@ -47,7 +61,7 @@ Note: fingerprints will require user input and likely re-doing the duo-ssh login
 ## Building the docker image
 
 ```bash
-./scripts/build_docker.sh --push
+./scripts/build_docker.sh
 ```
 
 

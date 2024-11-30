@@ -37,7 +37,7 @@ duo-ssh() {
 
     # Use expect to automate the SSH login
     expect -c "
-        set timeout 3
+        set timeout 30
 
         spawn ssh $1
 
