@@ -1,0 +1,6 @@
+common:
+  REGISTRY: "docker.io"
+  USERNAME: "adrianorenstein"
+  IMAGE_NAME: "duo_device_register"
+  TAG: "latest"
+  PLATFORMS: "linux/amd64,linux/arm64"

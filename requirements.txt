@@ -1,0 +1,4 @@
+pyotp
+requests
+pycryptodome
+pyqrcode
