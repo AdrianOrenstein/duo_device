@@ -1,0 +1,5 @@
+pyotp
+requests
+pycryptodome
+pyqrcode
+opencv-python-headless
