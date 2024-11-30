@@ -33,7 +33,7 @@ source ~/.zshrc
 ## 3) Ready
 
 ```bash
-`duo-ssh beluga`
+duo-ssh beluga
 ```
 
 # Contributors
@@ -42,10 +42,8 @@ source ~/.zshrc
 
 ```bash
 ./scripts/build_docker.sh --push
-
-
 ```
 
 
-# Cudos
+# Kudos
 [Repo that reverse engineered the Duo 2FA Mobile App](https://github.com/revalo/duo-bypass)
