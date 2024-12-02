@@ -6,8 +6,7 @@ This setup guide creates a `duo-ssh` command that auto-fills a Duo One-Time-Pass
 
 1. Clone this repo into your ssh folder: `git clone https://github.com/AdrianOrenstein/duo_device ~/.ssh/duo_device`
 2. Make sure your SSH auth keys are setup: https://ccdb.alliancecan.ca/ssh_authorized_keys
-3. Register a Duo Mobile device: https://ccdb.alliancecan.ca/multi_factor_authentications
-4. Right click `->` Save QR code as `qr.png` into `~/.ssh/duo_device/qr.png`
+3. Register a Duo Mobile device: https://ccdb.alliancecan.ca/multi_factor_authentications. As you register, you will see a QR code. Right click on the QR code and save as `qr.png` into `~/.ssh/duo_device/qr.png`
 
 ### With Docker
 
@@ -35,7 +34,12 @@ chmod -R 600 ~/.ssh/duo_device
 #### zbarimg
 Need `zbarimg` to extract the hotp code.
 ```bash
+# For Debian/Ubuntu, run:
 apt-get install -y zbar-tools libzbar-dev
+
+# or for macOS with Homebrew, run:
+brew install zbar
+
 
 zbarimg qr.png | sed 's/QR-Code:duo:\/\/\(.*\)/\1/'
 ```
