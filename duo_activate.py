@@ -50,3 +50,5 @@ if __name__ == "__main__":
 
     with open("response.json", "w") as resp:
         resp.write(r.text)
+
+    print("Done, now finish the activation process on the duo website.")

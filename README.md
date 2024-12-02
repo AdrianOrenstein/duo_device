@@ -1,6 +1,6 @@
 # Duo device register
 
-This setup guide creates a `duo-ssh` command that auto-fills a Duo One-Time-Password (OTP). The [autofill script is here](https://github.com/AdrianOrenstein/duo_device/blob/main/duo_ssh.sh). The 
+This setup guide creates a `duo-ssh` command that auto-fills a Duo One-Time-Password (OTP). The [autofill script is here](https://github.com/AdrianOrenstein/duo_device/blob/main/duo_ssh.sh).
 
 ## 1) Generating OTP
 
@@ -21,8 +21,12 @@ Replace `XXXXXXXXXX-YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY` below with the output o
 ```bash
 docker run --rm -it -w /app --volume=$(pwd):/app/:rw adrianorenstein/duo_device_register:latest python duo_activate.py XXXXXXXXXX-YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
 
-# Make sure only your user can read the files in this directory. Stops other users from reading your hotp secret. 
-chmod -R 600 ~/.ssh/duo_device
+# Make sure only your user can read the files in this directory. Stops other users from reading your hotp secret. https://linuxize.com/post/chmod-command-in-linux/#symbolic-text-method
+rm ~/.ssh/duo_device/qr.png
+chmod u=rwx,go= ~/.ssh/duo_device
+find ~/.ssh/duo_device -type f -exec chmod 600 {} \;
+find ~/.ssh/duo_device -type d -exec chmod 700 {} \;
+chmod u=rwx,go= ~/.ssh/duo_device/duo_ssh.sh
 ```
 </details>
 
@@ -52,7 +56,7 @@ virtualenv -p python3.11 venv
 ./venv/bin/python3.11 -m pip install pyotp requests pycryptodome pyqrcode
 ./venv/bin/python3.11 duo_activate.py XXXXXXXXXX-YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
 
-# Make sure only your user can read the files in this directory. Stops other users from reading your hotp secret. 
+# This is a comment on better practices. We'd like to make sure only your user can read or execute the files in this directory. These commands stop other users from reading your hotp secret, and only lets your account increment the hotp. 
 chmod -R 600 ~/.ssh/duo_device
 ```
 
@@ -85,8 +89,11 @@ source ~/.zshrc
 
 ## 3) Ready
 
+
+
 ```bash
-duo-ssh beluga
+# now use duo-ssh as you would ssh
+duo-ssh ...
 ```
 
 Note: fingerprints will require user input and likely re-doing the duo-ssh login. 
@@ -102,3 +109,4 @@ Note: fingerprints will require user input and likely re-doing the duo-ssh login
 
 # Kudos
 [Repo that reverse engineered the Duo 2FA Mobile App](https://github.com/revalo/duo-bypass)
+David for helping me write a more readable readme
