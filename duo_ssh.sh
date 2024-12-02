@@ -1,6 +1,6 @@
 # /bin/bash
 
-duo-ssh() {
+duo-otp() {
     # Check if oathtool is installed
     if ! command -v oathtool >/dev/null 2>&1; then
         echo "Error: 'oathtool' is not installed."
@@ -34,6 +34,14 @@ duo-ssh() {
         echo "$secret"
         echo "$new_count"
     } > "$token_file"
+
+    # Output the code
+    echo "$code"
+}
+
+duo-ssh() {
+    # get the code from the duo-otp function
+    code=$(duo-otp)
 
     # Use expect to automate the SSH login
     expect -c "
