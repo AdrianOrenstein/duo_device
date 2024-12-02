@@ -39,7 +39,7 @@ duo-ssh() {
     expect -c "
         set timeout 30
 
-        spawn ssh $1
+        spawn ssh -tt $1
 
         expect {
             \"Passcode or option\" {
@@ -48,6 +48,6 @@ duo-ssh() {
             }
         }
 
-        interact
+        interact -o -nobuffer
     "
 }
