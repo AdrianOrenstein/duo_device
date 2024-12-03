@@ -20,7 +20,6 @@ duo-ssh() {
         expect {
             \"Passcode or option\" {
                 send \"$code\r\"
-                exp_continue
             }
             -re \"Password:\" {
                 stty -echo
