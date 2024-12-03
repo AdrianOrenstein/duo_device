@@ -11,7 +11,6 @@ Namely, this repo just adds the `duo-otp` and `duo-ssh` commands for convenience
 1. Clone this repo into your ssh folder: `git clone https://github.com/AdrianOrenstein/duo_device ~/.ssh/duo_device`
 2. Make sure your SSH auth keys are setup: https://ccdb.alliancecan.ca/ssh_authorized_keys, this repo assumes you do not need to enter passwords. 
 3. Register a Duo Mobile device: https://ccdb.alliancecan.ca/multi_factor_authentications. As you register, you will see a QR code. Right click on the QR code and save as `qr.png` into `~/.ssh/duo_device/qr.png`
-4. You should complete the registration process on the duo website. 
 
 ### With Docker
 I have created docker images to save you the hastle of installing some packages that you only need for registering. 
@@ -73,6 +72,10 @@ chmod u=rwx,go= ~/.ssh/duo_device/duo_otp.sh
 ```
 
 </details>
+
+### Finish device registration on the duo website
+
+Now that you have generated the OTP secret, you can finish the device registration on duo. 
 
 ## 2) Generating OTPs
 
