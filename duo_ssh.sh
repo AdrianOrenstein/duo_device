@@ -8,9 +8,6 @@ duo-ssh() {
         return 1
     fi
 
-    # Get the OTP code from the duo-otp function
-    code=$(duo-otp)
-
     # Use expect to automate the SSH login, passing all arguments to ssh
     expect -c "
         set timeout 30
@@ -18,15 +15,20 @@ duo-ssh() {
         spawn ssh -tt $*
         
         expect {
-            \"Passcode or option\" {
-                send \"$code\r\"
-            }
             -re \"Password:\" {
                 stty -echo
                 expect_user -re \"(.*)\\n\"
                 stty echo
                 send \"$expect_out(1,string)\r\"
                 exp_continue
+            }
+            \"Passcode or option\" {
+                # Get the OTP code from the duo-otp function
+                send \"$(duo-otp)\r\"
+            }
+            \"docs.alliancecan.ca\" {
+                # We only see this message if we're logged in
+                interact
             }
             eof {
                 exit
