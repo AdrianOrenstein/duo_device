@@ -26,10 +26,6 @@ duo-ssh() {
                 # Get the OTP code from the duo-otp function
                 send \"$(duo-otp)\r\"
             }
-            \"docs.alliancecan.ca\" {
-                # We only see this message if we're logged in
-                interact
-            }
             eof {
                 exit
             }
