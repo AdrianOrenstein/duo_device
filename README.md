@@ -98,11 +98,11 @@ This is the minimal command needed to generate OTPs.
 
 ```bash
 # .bashrc
-echo 'source ~/.ssh/duo_device/duo_otp.sh' >> ~/.bashrc
+echo 'alias duo-otp="$HOME/.ssh/duo_device/duo_otp.sh"' >> ~/.bashrc
 source ~/.bashrc
 
 # or .zshrc
-echo 'source ~/.ssh/duo_device/duo_otp.sh' >> ~/.zshrc
+echo 'alias duo-otp="$HOME/.ssh/duo_device/duo_otp.sh"' >> ~/.zshrc
 source ~/.zshrc
 ```
 
@@ -128,11 +128,11 @@ Arbitrary code execution on your host machine should never go unverified.
 #### Enabling
 ```bash
 # .bashrc
-echo 'source ~/.ssh/duo_device/duo_ssh.sh' >> ~/.bashrc
+echo 'alias duo-ssh="$HOME/.ssh/duo_device/duo_ssh.sh"' >> ~/.bashrc
 source ~/.bashrc
 
 # or .zshrc
-echo 'source ~/.ssh/duo_device/duo_ssh.sh' >> ~/.zshrc
+echo 'alias duo-ssh="$HOME/.ssh/duo_device/duo_ssh.sh"' >> ~/.zshrc
 source ~/.zshrc
 ```
 #### Expected behaviour

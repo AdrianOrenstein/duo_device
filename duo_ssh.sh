@@ -1,35 +1,31 @@
-# /bin/bash
+#!/usr/bin/env expect
 
-duo-ssh() {
-    # Check that duo-otp is available
-    if ! command -v duo-otp >/dev/null 2>&1; then
-        echo "Error: 'duo-otp' function not found."
-        echo "Please follow the instructions to enable the 'duo-otp' function before using this script."
-        return 1
-    fi
+# Construct the OTP script path using the HOME environment variable
+set otp_script "$env(HOME)/.ssh/duo_device/duo_otp.sh"
+set host [lindex $argv 0]
 
-    # Use expect to automate the SSH login, passing all arguments to ssh
-    expect -c "
-        set timeout 30
-
-        spawn ssh -tt $*
-        
-        expect {
-            -re \"Password:\" {
-                stty -echo
-                expect_user -re \"(.*)\\n\"
-                stty echo
-                send \"$expect_out(1,string)\r\"
-                exp_continue
-            }
-            \"Passcode or option\" {
-                # Get the OTP code from the duo-otp function
-                send \"$(duo-otp)\r\"
-            }
-            eof {
-                exit
-            }
-        }
+spawn ssh $host
+expect {
+    "Password:" {
+        stty -echo
+        expect_user -re "(.*)\n"
+        set password $expect_out(1,string)
+        stty echo
+        send_user "\n"
+        send "$password\r"
+        exp_continue
+    }
+    "Passcode or option" {
+        send "[exec $otp_script]\r"
+        expect "Success. Logging you in..."
         interact
-    "
+    }
+    eof {
+        send_user "Connection closed unexpectedly.\n"
+        exit 1
+    }
+    timeout {
+        send_user "Timed out waiting for prompts.\n"
+        exit 1
+    }
 }
