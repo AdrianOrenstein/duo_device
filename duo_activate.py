@@ -26,7 +26,7 @@ if __name__ == "__main__":
         "full_disk_encryption": "true",
         "passcode_status": "true",
         "platform": "Android",
-        "app_version": "3.49.0",
+        "app_version": "4.85.0",
         "app_build_number": "323001",
         "version": "11",
         "manufacturer": "unknown",

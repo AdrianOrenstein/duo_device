@@ -1,4 +1,4 @@
-# /bin/bash
+#!/bin/bash
 
 # Check if oathtool is installed
 if ! command -v oathtool >/dev/null 2>&1; then
@@ -6,16 +6,17 @@ if ! command -v oathtool >/dev/null 2>&1; then
     echo "Please install oathtool to use this script."
     echo "For Debian/Ubuntu, run: sudo apt-get install oathtool"
     echo "For macOS with Homebrew, run: brew install oath-toolkit"
-    return 1
+    exit 1
 fi
 
-# Path to your HOTP token file
-token_file="$HOME/.ssh/duo_device/duotoken.hotp"
+# Path to your HOTP token file, resolved next to this script
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+token_file="$script_dir/duotoken.hotp"
 
 # Check if the token file exists
 if [ ! -f "$token_file" ]; then
     echo "Token file not found at $token_file"
-    return 1
+    exit 1
 fi
 
 # Read the secret and count from the file

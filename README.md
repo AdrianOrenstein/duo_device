@@ -8,9 +8,9 @@ This section walks you through registering alternative devices.
 Registering alternative devices came from [the repo that reverse engineered the Duo 2FA Mobile App](https://github.com/revalo/duo-bypass) and this repo adapted device registration for Compute Canada users.
 Namely, this repo just adds the `duo-otp` and `duo-ssh` commands for convenience.
 
-1. Clone this repo into your ssh folder: `git clone https://github.com/AdrianOrenstein/duo_device ~/.ssh/duo_device`
+1. Clone this repo to `~/.duo`: `git clone https://github.com/AdrianOrenstein/duo_device ~/.duo`.
 2. Make sure your SSH auth keys are setup: https://ccdb.alliancecan.ca/ssh_authorized_keys, this repo assumes you do not need to enter passwords. 
-3. Register a Duo Mobile device: https://ccdb.alliancecan.ca/multi_factor_authentications. As you register, you will see a QR code. Right click on the QR code and save as `qr.png` into `~/.ssh/duo_device/qr.png`
+3. Register a Duo Mobile device: https://ccdb.alliancecan.ca/multi_factor_authentications. As you register, you will see a QR code. Right click on the QR code and save as `qr.png` into `~/.duo/qr.png`
 
 ### With Docker
 I have created docker images to save you the hastle of installing some packages that you only need for registering. 
@@ -28,11 +28,11 @@ Replace `XXXXXXXXXX-YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY` below with the output o
 docker run --rm -it -w /app --volume=$(pwd):/app/:rw adrianorenstein/duo_device_register:latest python duo_activate.py XXXXXXXXXX-YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
 
 # Make sure only your user can read the files in this directory. Stops other users from reading your hotp secret. https://linuxize.com/post/chmod-command-in-linux/#symbolic-text-method
-chmod u=rwx,go= ~/.ssh/duo_device
-find ~/.ssh/duo_device -type f -exec chmod 600 {} \;
-find ~/.ssh/duo_device -type d -exec chmod 700 {} \;
-chmod u=rwx,go= ~/.ssh/duo_device/duo_ssh.sh
-chmod u=rwx,go= ~/.ssh/duo_device/duo_otp.sh
+chmod u=rwx,go= ~/.duo
+find ~/.duo -type f -exec chmod 600 {} \;
+find ~/.duo -type d -exec chmod 700 {} \;
+chmod u=rwx,go= ~/.duo/duo-otp-or-ask.sh
+chmod u=rwx,go= ~/.duo/duo_otp.sh
 ```
 </details>
 
@@ -64,11 +64,11 @@ virtualenv -p python3.11 venv
 ./venv/bin/python3.11 duo_activate.py XXXXXXXXXX-YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
 
 # Make sure only your user can read the files in this directory. Stops other users from reading your hotp secret. https://linuxize.com/post/chmod-command-in-linux/#symbolic-text-method
-chmod u=rwx,go= ~/.ssh/duo_device
-find ~/.ssh/duo_device -type f -exec chmod 600 {} \;
-find ~/.ssh/duo_device -type d -exec chmod 700 {} \;
-chmod u=rwx,go= ~/.ssh/duo_device/duo_ssh.sh
-chmod u=rwx,go= ~/.ssh/duo_device/duo_otp.sh
+chmod u=rwx,go= ~/.duo
+find ~/.duo -type f -exec chmod 600 {} \;
+find ~/.duo -type d -exec chmod 700 {} \;
+chmod u=rwx,go= ~/.duo/duo-otp-or-ask.sh
+chmod u=rwx,go= ~/.duo/duo_otp.sh
 ```
 
 </details>
@@ -98,11 +98,11 @@ This is the minimal command needed to generate OTPs.
 
 ```bash
 # .bashrc
-echo 'alias duo-otp="$HOME/.ssh/duo_device/duo_otp.sh"' >> ~/.bashrc
+echo 'alias duo-otp="$HOME/.duo/duo_otp.sh"' >> ~/.bashrc
 source ~/.bashrc
 
 # or .zshrc
-echo 'alias duo-otp="$HOME/.ssh/duo_device/duo_otp.sh"' >> ~/.zshrc
+echo 'alias duo-otp="$HOME/.duo/duo_otp.sh"' >> ~/.zshrc
 source ~/.zshrc
 ```
 
@@ -113,13 +113,13 @@ source ~/.zshrc
 ```
 
 
-### The `duo-ssh` command
+### `SSH_ASKPASS` auto-fill
 
-This is an optional feature to auto-fill the OTP, this requires giving a script temporary access to stdout and stdin, so...
+This is an optional feature to auto-fill the OTP so you can run plain `ssh` (and `scp`, `rsync`, git-over-ssh) without a wrapper command. `ssh` calls the program named by `SSH_ASKPASS` to obtain a passcode. `duo-otp-or-ask.sh` returns the OTP for the Duo prompt, reads the terminal for other prompts, and falls back to a GUI when neither is available. It works with or without a controlling terminal, which is what lets an automation user authenticate.
 
-The `duo-ssh` command is a security concern. 
-You're allowing the autofill script to watch your terminal for a short period of time to fill in the OTP when it detects the duo 2fa prompt. 
-Best practices are to **always verify the [autofill script](https://github.com/AdrianOrenstein/duo_device/blob/main/duo_ssh.sh)** and verify again if you pull an update.
+Auto-fill is a security concern. 
+You're allowing the autofill script to supply credentials on your behalf when it detects the duo 2fa prompt. 
+Best practices are to **always verify the [autofill script](https://github.com/AdrianOrenstein/duo_device/blob/main/duo-otp-or-ask.sh)** and verify again if you pull an update.
 Arbitrary code execution on your host machine should never go unverified.
 
 <details>
@@ -127,13 +127,10 @@ Arbitrary code execution on your host machine should never go unverified.
 
 #### Enabling
 ```bash
-# .bashrc
-echo 'alias duo-ssh="$HOME/.ssh/duo_device/duo_ssh.sh"' >> ~/.bashrc
+# .bashrc (or ~/.zprofile)
+echo 'export SSH_ASKPASS="$HOME/.duo/duo-otp-or-ask.sh"' >> ~/.bashrc
+echo 'export SSH_ASKPASS_REQUIRE="force"' >> ~/.bashrc
 source ~/.bashrc
-
-# or .zshrc
-echo 'alias duo-ssh="$HOME/.ssh/duo_device/duo_ssh.sh"' >> ~/.zshrc
-source ~/.zshrc
 ```
 #### Expected behaviour
 As you have enabled ssh keys, you likely won't have a password prompt. 
@@ -158,18 +155,29 @@ Success. Logging you in...
 
 ```bash
 # generate a otp and then paste it in when prompted.
-duo-opt
+duo-otp
 > ###### <- a code will be here.
 ssh beluga
 ```
 
-Or, if you enabled auto-fill:
+Or, if you enabled auto-fill, use `ssh` as normal and the passcode is filled for you:
 ```bash
-# now use duo-ssh as you would ssh
-duo-ssh beluga
+ssh beluga
 ```
 
-Note: fingerprints will require user input and likely re-doing the duo-ssh command. 
+Note: fingerprints will require user input and likely re-doing the command. 
+
+# FAQ
+
+## Activation fails with a "deprecated and no longer supported" error
+
+Duo periodically retires old Duo Mobile client versions. When the version this repo reports is retired, `duo_activate.py` fails with a response like:
+
+```
+{'code': 40301, 'message': 'Client DuoMobileApp version X.Y.Z is deprecated and no longer supported. Please upgrade to the latest supported version.', 'stat': 'FAIL'}
+```
+
+Update the `app_version` value in [`duo_activate.py`](https://github.com/AdrianOrenstein/duo_device/blob/main/duo_activate.py) to a current Duo Mobile version and run activation again. If that fixes it, please open an issue or let me know the version that worked so I can update the default for everyone.
 
 # Contributors
 
