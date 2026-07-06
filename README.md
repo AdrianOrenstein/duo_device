@@ -133,7 +133,7 @@ echo 'export SSH_ASKPASS_REQUIRE="force"' >> ~/.bashrc
 source ~/.bashrc
 ```
 #### Expected behaviour
-As you have enabled ssh keys, you likely won't have a password prompt. 
+As you have enabled ssh keys, you likely won't have a password prompt. `ssh` sends the Duo prompt to the helper instead of your terminal, so the passcode is not echoed and you type nothing.
 ```
 Multifactor authentication is now mandatory to connect to this cluster.
 ...
@@ -141,12 +141,6 @@ Multifactor authentication is now mandatory to connect to this cluster.
 ...
 ...
 
-Enter a passcode or select one of the following options:
-
- 1. <Some existing duo mobile device>
- 2. <The device you just registered> (Android)
-
-Passcode or option (1-2): ###### <- A unique OTP should be auto-filled for you.
 Success. Logging you in...
 ```
 </details>
